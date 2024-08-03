@@ -5,7 +5,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 
 const AccountMenu = () => {
-    const [anchorEl, setAnchorEl] = useEffect(null);
+    {/* const [anchorEl, setAnchorEl] = useEffect(null);*/}
+    const [anchorEl, setAnchorEl] = useState(null); // Changed useEffect to useState
+
 
     const open = Boolean(anchorEl);
 

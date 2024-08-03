@@ -8,14 +8,14 @@ import { addToCart, underControl } from '../../../redux/userSlice';
 import { BasicButton, GreenButton } from '../../../utils/buttonStyles';
 import { getProductDetails, updateStuff } from '../../../redux/userHandle';
 import Popup from '../../../components/Popup';
-import { generateRandomColor, timeAgo} from '../../../utils/helperFunctions';
+import { generateRandomColor, timeAgo } from '../../../utils/helperFunctions';
 
 const ViewOrder = () => {
     const dispatch = useDispatch();
     const params = useParams();
     const productID = params.id;
 
-    const { currentUser, currentRole,productDetails, loading, status, error, responseReview, responseDetails } = useSelector(state => state.user);
+    const { currentUser, currentRole, productDetails, loading, status, error, responseReview, responseDetails } = useSelector(state => state.user);
 
     useEffect(() => {
         dispatch(getProductDetails(productID));
@@ -47,7 +47,7 @@ const ViewOrder = () => {
         dispatch(updateStuff(fields, productID, "deleteProductReview"));
     };
 
-    const reviewer = currentUser && currentUser._id
+    const reviewer = currentUser && currentUser._id;
 
     const handleSubmit = (event) => {
         event.preventDefault();
@@ -74,7 +74,7 @@ const ViewOrder = () => {
             setMessage("Network Error");
             setShowPopup(true);
         }
-    }, [dispatch, responseReview,productID, status, error]);
+    }, [dispatch, responseReview, productID, status, error]);
 
     return (
         <>
@@ -153,10 +153,12 @@ const ViewOrder = () => {
                                             <ReviewCard key={index}>
                                                 <ReviewCardDivision>
                                                     <Avatar sx={{ width: "60px", height: "60px", marginRight: "1rem", backgroundColor: generateRandomColor(review._id) }}>
-                                                        {String(reviewreviewername).charAt(0)}
+                                                        {String(review.reviewer.name).charAt(0)} 
+                                                        {/* {String(reviewreviewername).charAt(0)} */}
                                                     </Avatar>
                                                     <ReviewDetails>
-                                                        <Typography variant="h6">{reviewreviewername}</Typography>
+                                                        <Typography variant="h6">{review.reviewer.name}</Typography> 
+                                                        {/* {reviewreviewername} */}
                                                         <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
 
                                                             <Typography variant="body2">

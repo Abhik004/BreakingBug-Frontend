@@ -1,3 +1,4 @@
+import React from 'react'; 
 import {
     Button,
     Card,
@@ -9,13 +10,12 @@ import {
 } from '@mui/material';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-
 import Chart from 'react-apexcharts';
 import { ChartDatabyYear } from '../../../utils/chartData';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
-const SalesChart = ({  }) => {
+const SalesChart = ({ type }) => { // Accept type as a prop
 
     const navigate = useNavigate();
 
@@ -40,7 +40,7 @@ const SalesChart = ({  }) => {
                 <ResponsiveChart
                     options={ChartDatabyYear.options}
                     series={ChartDatabyYear.series}
-                    type={type}
+                    type={type} // Pass type here
                 />
             </CardContent>
 

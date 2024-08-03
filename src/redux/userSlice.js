@@ -47,6 +47,17 @@ const userSlice = createSlice({
     name: 'user',
     initialState,
     reducers: {
+        setFilteredProducts: (state, action) => { //added
+            state.filteredProducts = action.payload;
+            state.responseSearch = null;
+            state.loading = false;
+            state.error = null;
+        },
+        getCustomersListFailed: (state, action) => { //added
+            state.responseCustomersList = action.payload;
+            state.loading = false;
+            state.error = null;
+        },
         authRequest: (state) => {
             state.status = 'loading';
         },
@@ -81,7 +92,18 @@ const userSlice = createSlice({
             state.status = 'success';
             state.response = null;
             state.error = null;
-            state.isLoggedIn = true;
+            state.isLoggedIn = isTokenValid(action.payload.token);
+        },
+        authLogout: (state) => {
+            localStorage.removeItem('user');
+            state.status = 'idle';
+            state.loading = false;
+            state.currentUser = null;
+            state.currentRole = null;
+            state.currentToken = null;
+            state.error = null;
+            state.response = true;
+            state.isLoggedIn = false;
         },
         addToCart: (state, action) => {
             const existingProduct = state.currentUser.cartDetails.find(
@@ -157,22 +179,39 @@ const userSlice = createSlice({
             state.response = null;
             state.error = action.payload;
         },
-        authLogout: (state) => {
-            localStorage.removeItem('user');
-            state.status = 'idle';
-            state.loading = false;
-            state.currentUser = null;
-            state.currentRole = null;
-            state.currentToken = null;
-            state.error = null;
-            state.response = true;
-            state.isLoggedIn = false;
-        },
+        
 
         isTokenValid: (state) => {
-            const decodedToken = jwtDecode(state.currentToken);
-            if (state.currentToken) {              state.isLoggedIn = true;
+            const token = state.currentToken;
+            if (token) {
+                try {
+                    const decodedToken = jwtDecode(token);
+                    // Assuming your token has an 'exp' property for expiration
+                    const isTokenExpired = decodedToken.exp * 1000 < Date.now();
+                    if (isTokenExpired) {
+                        state.isLoggedIn = false;
+                        localStorage.removeItem('user');
+                        state.currentUser = null;
+                        state.currentRole = null;
+                        state.currentToken = null;
+                        state.status = 'idle';
+                        state.response = null;
+                        state.error = null;
+                    } else {
+                        state.isLoggedIn = true;
+                    }
+                } catch (e) {
+                    state.isLoggedIn = false;
+                    localStorage.removeItem('user');
+                    state.currentUser = null;
+                    state.currentRole = null;
+                    state.currentToken = null;
+                    state.status = 'idle';
+                    state.response = null;
+                    state.error = null;
+                }
             } else {
+                state.isLoggedIn = false;
                 localStorage.removeItem('user');
                 state.currentUser = null;
                 state.currentRole = null;
@@ -180,10 +219,8 @@ const userSlice = createSlice({
                 state.status = 'idle';
                 state.response = null;
                 state.error = null;
-                state.isLoggedIn = false;
             }
         },
-
         getRequest: (state) => {
             state.loading = true;
         },
@@ -311,7 +348,9 @@ export const {
     removeAllFromCart,
     fetchProductDetailsFromCart,
     updateCurrentUser,
-    
+    setFilteredProducts,      // Ensure this is exported
+    getCustomersListFailed,   // Ensure this is exported
 } = userSlice.actions;
+
 
 export const userReducer = userSlice.reducer;

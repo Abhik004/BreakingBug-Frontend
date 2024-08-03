@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { authLogout } from '../redux/userSlice';
+import { logoutUser, updateCustomer } from '../redux/userHandle';
 import styled from 'styled-components';
-import { updateCustomer } from '../redux/userHandle';
 
 const Logout = () => {
   const { currentUser, currentRole } = useSelector(state => state.user);
@@ -12,24 +11,23 @@ const Logout = () => {
   const dispatch = useDispatch();
 
   useEffect(() => {
-    if (currentRole === "Customer") {
-      console.log(currentUser);
+    if (currentRole === "Customer" && currentUser) {
       dispatch(updateCustomer(currentUser));
     }
-  }, [currentRole, currentUser, dispatch])
+  }, [currentRole, currentUser, dispatch]);
 
   const handleLogout = () => {
-   
-    navigate('/');
+    dispatch(logoutUser()); // Clear user state
+    navigate('/'); // Redirect after logging out
   };
 
   const handleCancel = () => {
-    navigate(-1);
+    navigate(-1); // Navigate back to the previous page
   };
 
   return (
     <LogoutContainer>
-      <h1>{currentUser.name}</h1>
+      <h1>{currentUser ? currentUser.name : "User"}</h1>
       <LogoutMessage>Are you sure you want to log out?</LogoutMessage>
       <LogoutButtonLogout onClick={handleLogout}>Log Out</LogoutButtonLogout>
       <LogoutButtonCancel onClick={handleCancel}>Cancel</LogoutButtonCancel>

@@ -2,23 +2,37 @@ import React, { useRef } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Container, Divider, Grid, IconButton, Paper, Typography } from '@mui/material';
 import styled from 'styled-components';
-import emptyCart from "../../../assets/cartimg.png"
+import emptyCart from "../../../assets/cartimg.png";
 import KeyboardDoubleArrowLeftIcon from '@mui/icons-material/KeyboardDoubleArrowLeft';
 import KeyboardDoubleArrowUpIcon from '@mui/icons-material/KeyboardDoubleArrowUp';
-import { addToCart, removeAllFromCart, removeFromCart } from '../../../redux/userSlice';
+import { addToCart, removeAllFromCart, removeFromCart, updateCurrentUser } from '../../../redux/userSlice';
 import { BasicButton, LightPurpleButton } from '../../../utils/styles';
 import { useNavigate } from 'react-router-dom';
-import { updateCustomer } from '../../../redux/userSlice';
 
 const Cart = ({ setIsCartOpen }) => {
-
     const dispatch = useDispatch();
-
     const navigate = useNavigate();
-
     const { currentUser } = useSelector((state) => state.user);
-
     let cartDetails = currentUser.cartDetails;
+
+    // Commented out code that was using previous state update method
+    // const handleRemoveFromCart = (product) => {
+    //     const updatedCart = cartDetails.filter(item => item._id !== product._id);
+    //     dispatch(updateCurrentUser({ ...currentUser, cartDetails: updatedCart }));
+    // };
+
+    // const handleAddToCart = (product) => {
+    //     const updatedCart = cartDetails.map(item =>
+    //         item._id === product._id
+    //             ? { ...item, quantity: item.quantity + 1 }
+    //             : item
+    //     );
+    //     dispatch(updateCurrentUser({ ...currentUser, cartDetails: updatedCart }));
+    // };
+
+    // const handleRemoveAllFromCart = () => {
+    //     dispatch(updateCurrentUser({ ...currentUser, cartDetails: [] }));
+    // };
 
     const handleRemoveFromCart = (product) => {
         dispatch(removeFromCart(product));
@@ -32,31 +46,31 @@ const Cart = ({ setIsCartOpen }) => {
         dispatch(removeAllFromCart());
     };
 
-    const totalQuantity = cartDetails.drop((total, item) => total + item.quantity, 0);
+    const totalQuantity = cartDetails.reduce((total, item) => total + item.quantity, 0);
     const totalOGPrice = cartDetails.reduce((total, item) => total + (item.quantity * item.price.mrp), 0);
     const totalNewPrice = cartDetails.reduce((total, item) => total + (item.quantity * item.price.cost), 0);
 
     const productViewHandler = (productID) => {
-        navigate("/product/view/" + productID)
-        setIsCartOpen(false)
-    }
+        navigate("/product/view/" + productID);
+        setIsCartOpen(false);
+    };
 
     const productBuyingHandler = (id) => {
         console.log(currentUser);
-        dispatch(updateCustomer(currentUser, currentUser._id));
-        setIsCartOpen(false)
-        navigate(`/product/buy/${id}`)
-    }
+        dispatch(updateCurrentUser(currentUser));
+        setIsCartOpen(false);
+        navigate(`/product/buy/${id}`);
+    };
 
     const allProductsBuyingHandler = () => {
         console.log(currentUser);
-        dispatch(updateCustomer(currentUser, currentUser._id));
-        setIsCartOpen(false)
-        navigate("/product/Checkout")
-    }
+        dispatch(updateCurrentUser(currentUser));
+        setIsCartOpen(false);
+        navigate("/product/Checkout");
+    };
 
     const priceContainerRef = useRef(null);
-
+    const firstCartItemRef = useRef(null);
 
     const handleScrollToBottom = () => {
         if (priceContainerRef.current) {
@@ -64,22 +78,19 @@ const Cart = ({ setIsCartOpen }) => {
         }
     };
 
-    const firstCartItemRef = useRef(null);
-
     const handleScrollToTop = () => {
         if (firstCartItemRef.current) {
             firstCartItemRef.current.scrollIntoView({ behavior: 'smooth' });
         }
     };
+
     return (
         <StyledContainer>
             <TopContainer>
-                <LightPurpleButton onClick={() => {
-                    setIsCartOpen(false)
-                }}>
+                <LightPurpleButton onClick={() => setIsCartOpen(false)}>
                     <KeyboardDoubleArrowLeftIcon /> Continue Shopping
                 </LightPurpleButton>
-                {cartDetails.length < 0 || (
+                {cartDetails.length > 0 && (
                     <IconButton
                         sx={{ backgroundColor: "#3a3939", color: "white" }}
                         onClick={handleScrollToTop}
@@ -181,7 +192,7 @@ const Cart = ({ setIsCartOpen }) => {
                 </CardGrid>
             )}
 
-            {cartDetails.length > 0 || (
+            {cartDetails.length > 0 && (
                 <BottomContainer>
                     <Button
                         variant="contained"
@@ -198,7 +209,6 @@ const Cart = ({ setIsCartOpen }) => {
                     </Button>
                 </BottomContainer>
             )}
-
         </StyledContainer>
     );
 };
@@ -256,7 +266,7 @@ const CartItem = styled.div`
 `;
 
 const CartImage = styled.img`
- width: 100%
+  width: 100%;
 `;
 
 const ProductImage = styled.img`

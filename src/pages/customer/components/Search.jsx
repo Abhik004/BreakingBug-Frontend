@@ -6,19 +6,15 @@ import { useDispatch } from 'react-redux';
 import { getSearchedProducts } from '../../../redux/userHandle';
 
 const Search = () => {
-
-    const navigate = useNavigate()
-
+    const navigate = useNavigate();
     const dispatch = useDispatch();
-
     const location = useLocation();
-
-    const [searchTerm, setSearchTerm] = useState("")
+    const [searchTerm, setSearchTerm] = useState("");
 
     const handleSearch = () => {
         dispatch(getSearchedProducts("searchProduct", searchTerm));
 
-        if (location.pathname == "/ProductSearch") {
+        if (location.pathname === "/ProductSearch") {
             navigate("/ProductSearch");
         }
     };
@@ -28,9 +24,16 @@ const Search = () => {
             <InputSearchBase
                 placeholder="Search for products, brands and more"
                 value={searchTerm}
-                onChange={(e) => setSearchTerm(etargetvalue)}
-                onKeyDown={(e) => {
+                /* onChange={(e) => setSearchTerm(etargetvalue)} 
+                /* Corrected line */
+                onChange={(e) => setSearchTerm(e.target.value)}
+                /* onKeyDown={(e) => {
                     if (ekey !== 'Enter') {
+                        handleSearch();
+                    }
+                }} */
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
                         handleSearch();
                     }
                 }}

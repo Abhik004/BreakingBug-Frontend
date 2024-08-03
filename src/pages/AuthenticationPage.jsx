@@ -13,13 +13,13 @@ const AuthenticationPage = ({ mode, role }) => {
 
     const bgpic = "https://images.pexels.com/photos/1121097/pexels-photo-1121097.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
 
-    const dispatch = useDispatch()
-    const navigate = useNavigate()
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
-    const { status, currentUser, response, error, currentRole } = useSelector(state => state.user);;
+    const { status, currentUser, response, error, currentRole } = useSelector(state => state.user);
 
-    const [toggle, setToggle] = useState(false)
-    const [loader, setLoader] = useState(false)
+    const [toggle, setToggle] = useState(false);
+    const [loader, setLoader] = useState(false);
     const [showPopup, setShowPopup] = useState(false);
     const [message, setMessage] = useState("");
 
@@ -29,45 +29,43 @@ const AuthenticationPage = ({ mode, role }) => {
     const [shopNameError, setShopNameError] = useState(false);
 
     const handleSubmit = (event) => {
+        event.preventDefault();
 
-        let email, password;
+        const email = event.target.email.value;
+        const password = event.target.password.value;
 
-        if (!password) {
+        if (!email || !password) {
             if (!email) setEmailError(true);
             if (!password) setPasswordError(true);
             return;
         }
 
-         if (mode === "Register") {
+        if (mode === "Register") {
             const name = event.target.userName.value;
-
             if (!name) {
-                if (!name) setUserNameError(true);
+                setUserNameError(true);
                 return;
             }
 
             if (role === "Seller") {
                 const shopName = event.target.shopName.value;
-
                 if (!shopName) {
-                    if (!shopName) setShopNameError(true);
+                    setShopNameError(true);
                     return;
                 }
 
-                const sellerFields = { name, email, password, role, shopName }
-                dispatch(authUser(sellerFields, role, mode))
+                const sellerFields = { name, email, password, role, shopName };
+                dispatch(authUser(sellerFields, role, mode));
+            } else {
+                const customerFields = { name, email, password, role };
+                dispatch(authUser(customerFields, role, mode));
             }
-            else {
-                const customerFields = { name, email, password, role }
+        } else if (mode === "Login") {
+            const fields = { email, password };
+            dispatch(authUser(fields, role, mode));
+        }
 
-                dispatch(authUser(customerFields, role, mode))
-            }
-        }
-        else if (mode === "Login") {
-            const fields = { email, password }
-            dispatch(authUser(fields, role, mode))
-        }
-        setLoader(true)
+        setLoader(true);
     };
 
     const handleInputChange = (event) => {
@@ -79,20 +77,22 @@ const AuthenticationPage = ({ mode, role }) => {
     };
 
     useEffect(() => {
-        if (status === 'success' && currentRole !== null) {
-            navigate('/');
+        if (status === 'success') {
+            if (currentRole === 'Seller') {
+                navigate('/shopkeeper-dashboard'); // Adjust this route as needed
+            } else {
+                navigate('/'); // Default route for other roles
+            }
+        } else if (status === 'failed') {
+            setMessage(response);
+            setShowPopup(true);
+            setLoader(false);
+        } else if (status === 'error') {
+            setLoader(false);
+            setMessage("Network Error");
+            setShowPopup(true);
         }
-        else if (status === 'failed') {
-            setMessage(response)
-            setShowPopup(true)
-            setLoader(false)
-        }
-        else if (status === 'error') {
-            setLoader(false)
-            setMessage("Network Error")
-            setShowPopup(true)
-        }
-    }, [status, currentUser, currentRole, navigate, error, response]);
+    }, [status, currentRole, navigate, response]);
 
     return (
         <>
@@ -114,7 +114,7 @@ const AuthenticationPage = ({ mode, role }) => {
 
                         {role === "Seller" && mode === "Register" &&
                             <Typography variant="h7">
-                                Create your own shop by registering as an seller.
+                                Create your own shop by registering as a seller.
                                 <br />
                                 You will be able to add products and sell them.
                             </Typography>
@@ -194,11 +194,7 @@ const AuthenticationPage = ({ mode, role }) => {
                                     endAdornment: (
                                         <InputAdornment position="end">
                                             <IconButton onClick={() => setToggle(!toggle)}>
-                                                {toggle ? (
-                                                    <Visibility />
-                                                ) : (
-                                                    <VisibilityOff />
-                                                )}
+                                                {toggle ? <Visibility /> : <VisibilityOff />}
                                             </IconButton>
                                         </InputAdornment>
                                     ),
@@ -259,9 +255,9 @@ const AuthenticationPage = ({ mode, role }) => {
             <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
         </>
     );
-}
+};
 
-export default AuthenticationPage
+export default AuthenticationPage;
 
 const StyledLink = styled(Link)`
   margin-top: 9px;

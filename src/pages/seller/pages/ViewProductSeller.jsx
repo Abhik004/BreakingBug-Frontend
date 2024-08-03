@@ -139,7 +139,9 @@ const ViewProductSeller = () => {
                   <GreenButton
                     onClick={() => setShowTab(!showTab)}
                   >
-                    {showTab ? <KeyboardArrowUp /> : <KeyboardArrowDown />}{buttonText}
+                    {showTab ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+                    {/* 'buttonText' is not defined */}
+                    {/* {buttonText} */}
                   </GreenButton>
                 </ButtonContainer>
 
@@ -296,143 +298,124 @@ const ViewProductSeller = () => {
                       <ReviewCard key={index}>
                         <ReviewCardDivision>
                           <Avatar sx={{ width: "60px", height: "60px", marginRight: "1rem", backgroundColor: generateRandomColor(review._id) }}>
-                            {String(reviewreviewername).charAt(0)}
+                            {String(review.reviewerName).charAt(0)}
                           </Avatar>
-                          <ReviewDetails>
-                            <Typography variant="h6">{reviewreviewername}</Typography>
-                            <div style={{ display: 'flex', alignItems: 'center', marginBottom: '1rem' }}>
-
-                              <Typography variant="body2">
-                                {timeAgo(review.date)}
-                              </Typography>
-                            </div>
-                            <Typography variant="subtitle1">Rating: {review.rating}</Typography>
-                            <Typography variant="body1">{review.comment}</Typography>
-                          </ReviewDetails>
-                          <IconButton onClick={() => deleteHandler(review._id)}
-                            sx={{ width: "4rem", p: 0 }}>
-                            <Delete color='error' sx={{ fontSize: "2rem" }} />
-                          </IconButton>
+                          <Typography variant="h6">{review.reviewerName}</Typography>
+                          <Typography variant="body2">{review.review}</Typography>
+                          <Typography variant="caption">{timeAgo(review.createdAt)}</Typography>
                         </ReviewCardDivision>
+                        <DeleteButton onClick={() => deleteHandler(review._id)}>
+                          <Delete />
+                        </DeleteButton>
                       </ReviewCard>
                     ))}
                   </ReviewContainer>
-                )
-                  :
-                  <ReviewWritingContainer>
-                    <Typography variant="h6">No Reviews Found.</Typography>
-                  </ReviewWritingContainer>
-                }
-
-                <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
-                <AlertDialogSlide dialog={dialog} showDialog={showDialog} setShowDialog={setShowDialog} taskHandler={deleteAllHandler} />
+                ) : (
+                  <Typography>No Reviews</Typography>
+                )}
               </>
           }
+          <Popup
+            open={showPopup}
+            handleClose={() => setShowPopup(false)}
+            message={message}
+          />
+          <AlertDialogSlide
+            dialog={dialog}
+            open={showDialog}
+            handleClose={() => setShowDialog(false)}
+            onConfirm={() => deleteAllHandler()}
+          />
         </>
       }
     </>
   );
-};
+}
 
 export default ViewProductSeller;
 
+// Styled components
 const ProductContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    margin: 20px;
-    justify-content: center;
-    align-items: center;
-    @media (min-width: 768px) {
-        flex-direction: row;
-    }
+  display: flex;
+  margin: 20px;
 `;
 
 const ProductImage = styled.img`
-    max-width: 300px;
-    /* width: 50%; */
-    margin-bottom: 20px;
-`;
-
-const EditImage = styled.img`
   width: 200px;
-  height: auto;
-  margin-bottom: 8px;
+  height: 200px;
+  object-fit: cover;
 `;
 
 const ProductInfo = styled.div`
-    display: flex;
-    flex-direction: column;
+  margin-left: 20px;
 `;
 
 const ProductName = styled.h1`
-    font-size: 24px;
+  font-size: 24px;
+  margin-bottom: 10px;
 `;
 
 const PriceContainer = styled.div`
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
 `;
 
-const PriceMrp = styled.p`
-    margin-top: 8px;
-    text-decoration: line-through;
-    color: #525050;
+const PriceCost = styled.span`
+  font-size: 18px;
+  margin-right: 10px;
 `;
 
-const PriceCost = styled.h3`
-    margin-top: 8px;
+const PriceMrp = styled.span`
+  font-size: 16px;
+  text-decoration: line-through;
+  margin-right: 10px;
 `;
 
-const PriceDiscount = styled.p`
-    margin-top: 8px;
-    color: darkgreen;
+const PriceDiscount = styled.span`
+  font-size: 16px;
+  color: red;
 `;
 
 const Description = styled.p`
-    margin-top: 16px;
+  margin-bottom: 10px;
 `;
 
 const ProductDetails = styled.div`
-    margin: 16px;
+  margin-bottom: 10px;
 `;
 
 const ButtonContainer = styled.div`
-    margin: 16px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+  margin-top: 20px;
+`;
+
+const EditImage = styled.img`
+  width: 100%;
+  height: auto;
 `;
 
 const ReviewWritingContainer = styled.div`
-    margin: 6rem;
-    display: flex;
-    gap: 2rem;
-    justify-content: center;
-    align-items: center;
-    flex-direction:column;
+  margin-top: 20px;
 `;
 
 const ReviewContainer = styled.div`
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1rem;
+  margin-top: 20px;
 `;
 
 const ReviewCard = styled(Card)`
-  && {
-    background-color: white;
-    margin-bottom: 2rem;
-    padding: 1rem;
-  }
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin-bottom: 10px;
 `;
 
 const ReviewCardDivision = styled.div`
+  flex: 1;
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
 `;
 
-const ReviewDetails = styled.div`
-  flex: 1;
+const DeleteButton = styled(IconButton)`
+  color: red;
 `;
+

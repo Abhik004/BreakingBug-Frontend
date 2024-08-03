@@ -10,17 +10,23 @@ import { addStuff } from '../redux/userHandle';
 
 const Products = ({}) => {
   const dispatch = useDispatch();
+  const navigate = useNavigate(); // Define navigate here
 
   const itemsPerPage = 9;
 
-  const { currentRole, responseSearch } = useSelector();
+  const { currentRole, responseSearch, productData } = useSelector((state) => ({
+    currentRole: state.user.currentRole,
+    responseSearch: state.product.responseSearch,
+    productData: state.product.productData // Adjust according to your state structure
+  }));
+  
   const [currentPage, setCurrentPage] = useState(1);
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
 
   const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem + itemsPerPage;
-  const currentItems = (indexOfFirstItem, indexOfLastItem);
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = productData.slice(indexOfFirstItem, indexOfLastItem); // Fix currentItems calculation
 
   const handleAddToCart = (event, product) => {
     event.stopPropagation();
@@ -35,8 +41,8 @@ const Products = ({}) => {
 
   const messageHandler = (event) => {
     event.stopPropagation();
-    setMessage("You have to login or register first")
-    setShowPopup(true)
+    setMessage("You have to login or register first");
+    setShowPopup(true);
   };
 
   if (!responseSearch) {
@@ -77,7 +83,6 @@ const Products = ({}) => {
                     </BasicButton>
                   </>
                 }
-
               </AddToCart>
             </ProductContainer>
           </Grid>
@@ -89,13 +94,13 @@ const Products = ({}) => {
           count={Math.ceil(productData.length / itemsPerPage)}
           page={currentPage}
           color="secondary"
-
+          onChange={(event, value) => setCurrentPage(value)}
         />
       </Container>
 
       <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
     </>
-  )
+  );
 };
 
 export default Products;

@@ -7,8 +7,25 @@ import {
     AppBar as MuiAppBar,
 } from "@mui/material";
 import { Link } from "react-scroll";
+import { Button } from '@mui/material';
 
 const drawerWidth = 240
+
+export const LightPurpleButton = styled(Button)(({ theme }) => ({
+    backgroundColor: '#D3B5D6', // Light purple color
+    color: '#fff',
+    '&:hover': {
+        backgroundColor: '#B58FCE', // Darker purple color on hover
+    },
+}));
+
+export const BasicButton = styled(Button)(({ theme }) => ({
+    backgroundColor: '#E0E0E0', // Light grey color
+    color: '#000',
+    '&:hover': {
+        backgroundColor: '#BDBDBD', // Darker grey color on hover
+    },
+}));
 
 export const StyledTableCell = styled(TableCell)(({ theme }) => ({
     [`&.${tableCellClasses.head}`]: {
